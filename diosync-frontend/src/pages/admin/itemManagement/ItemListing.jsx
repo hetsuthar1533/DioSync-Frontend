@@ -8,13 +8,13 @@ import Modal from '../../../components/core/Modal'
 import AdminDeleteModal from '../../../components/core/AdminDeleteModal'
 import { BulkAction, BulkActionModel, DELETE, UPDATE } from '../../../constants/roleConstants'
 import AddItems from './AddItems'
-import { DeleteItems, GetItems } from '../../../services/itemsService'
+import { DeleteItems, GetItems, UpdateItems } from '../../../services/itemsService'
 import { deleteToastFun } from '../../../utils/commonHelper'
 import { useDispatch } from 'react-redux'
 import { hideLoader, showLoader } from '../../../redux/slices/siteLoaderSlice'
 import BulkHeader from '../../../components/themeComponents/BulkHeader'
 import { BulkPerformAction } from '../../../services/commonService'
-
+import axios from 'axios'
 const ItemsListing = () => {
   const dispatch = useDispatch()
   const [totalItemsOnPage, setTotalItemsOnPage] = useState(0)
@@ -92,20 +92,27 @@ const ItemsListing = () => {
     setItemOffset(0)
   }, [searchItem])
   const getItemsData = async () => {
+    console.log("hi this is getItemsDATA method and i am inside Item Listing componenent");
+    
     dispatch(showLoader())
     const orderVal = order ? '' : '-'
-    let queryString = `?page=${itemOffset / itemsPerPage + 1}`
+    let queryString = ``
     if (orderby) {
-      queryString += `&ordering=${orderVal}${orderby}`
+      queryString += ``
     }
     if (searchItem) {
-      queryString += `&search=${searchItem}`
+      queryString += ``
     }
     const response = await GetItems(queryString)
-    const results = response?.data?.data?.results || []
+    console.log("this is response ",response);
+
+
+    const results = response?.data?.data || []
+    console.log("Hello I came from axios middleware",results)
     const count = response?.data?.data?.count || 0
     setTotalCount(count)
     setCurrentItems(results)
+    console.log("hi i am cuureent item ")
     setPageCount(Math.ceil(count / itemsPerPage))
     setTotalItemsOnPage(results.length)
     dispatch(hideLoader())
@@ -121,20 +128,7 @@ const ItemsListing = () => {
     setOrder(order)
   }
 
-  const handleOptions = (optionValue, item) => {
-    switch (optionValue) {
-      case UPDATE:
-        setSelectedItem(item)
-        setOpenModal(true)
-        break
-      case DELETE:
-        setOpenDeleteModal(true)
-        setSelectedItem(item?.id)
-        break
-      default:
-        break
-    }
-  }
+
 
   const handleCloseModal = () => {
     setOpenModal(false)
@@ -149,24 +143,61 @@ const ItemsListing = () => {
     setOpenDeleteModal(false)
     setSelectedItem('')
   }
-
-  const handleDeleteItems = async () => {
+  const handleUpdateItems = async (data,id) => {
     dispatch(showLoader())
-    const response = await DeleteItems(selectedItem)
-    if (response?.status === 204) {
-      deleteToastFun('Item deleted successfully', 'success')
-      handleCloseDeleteModal()
-      if (totalItemsOnPage === 1 && itemOffset > 0) {
-        setItemOffset(itemOffset - itemsPerPage) // Go to the previous page
-      } else {
-        getItemsData()
-      }
+    console.log(data);
+    
+    setSelectedItem(data); 
+    setOpenModal(true); 
+    
+    const response = await UpdateItems(data)
+    if (response?.status === 200) {
+      deleteToastFun('Item updated successfully', 'success')
+      handleCloseModal()
+
+      getItemsData()
+      
     } else {
       deleteToastFun('Something went wrong', 'error')
     }
     dispatch(hideLoader())
   }
 
+  const handleDeleteItems = async (id) => {
+    dispatch(showLoader())
+    
+    const response = await DeleteItems(id)
+    if (response?.status === 200) {
+      deleteToastFun('Item deleted successfully', 'success')
+      handleCloseDeleteModal()
+
+      getItemsData()
+      
+    } else {
+      deleteToastFun('Something went wrong', 'error')
+    }
+    dispatch(hideLoader())
+  }
+  const handleOptions = (optionValue, item) => {
+    console.log("hello i am update item ",item)
+console.log(optionValue);
+
+    switch (optionValue) {
+      case UPDATE:
+        console.log("hello i am inside update item ",item)
+        setSelectedItem(item); // Set the selected item for editing
+        setOpenModal(true); // Open the modal for editing
+        break;
+      case DELETE:
+        setOpenDeleteModal(true); // Open the delete confirmation modal
+        setSelectedItem(item?.id); // Set the selected item ID for deletion
+        break;
+      default:
+        console.log("hello i am default case");
+        
+        break;
+    }
+  };
   const handleApplyAction = () => {
     if (selectedAction) {
       switch (selectedAction) {
@@ -252,6 +283,8 @@ const ItemsListing = () => {
               totalCount={totalCount}
               handleOptions={handleOptions}
               currentItems={currentItems}
+handleDeleteItems={handleDeleteItems}
+handleUpdateItems={handleUpdateItems}
               isEdit={true}
               isDelete={true}
               isView={false}

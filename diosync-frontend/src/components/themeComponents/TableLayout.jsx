@@ -52,6 +52,9 @@ function TableLayout(props) {
     totalCount,
     handleAddtoCart,
     handleInventoryQuantity,
+    deleteItem,
+    handleDeleteItems,
+    handleUpdateItems
   } = props
 
   const location = useLocation()
@@ -182,6 +185,25 @@ function TableLayout(props) {
     setItemData(item)
     toggleDropdown(e, 'delete', dataKey)
   }
+  function editItem(id){
+    console.log("id",id);
+    
+  }
+//  async function deleteItem(id){
+//     dispatch(showLoader())
+//     const response = await DeleteItems(id)
+//     if (response?.status === 204) {
+//       deleteToastFun('Item deleted successfully', 'success')
+//       handleCloseDeleteModal()
+      
+//         getItemsData()
+    
+//     } else {
+//       alert('Something went wrong', 'error')
+//     }
+//     dispatch(hideLoader())
+    
+//   }
 
   useEffect(() => {
     if (isOpen) {
@@ -229,233 +251,59 @@ function TableLayout(props) {
   return (
     <div className=''>
       <div className=' rounded-lg border border-medium-grey overflow-x-auto overflow-y-visible'>
-        <table className='w-full text-sm leading-[22px] font-semibold text-center whitespace-nowrap'>
-          <thead className='text-sm leading-[22px] font-semibold text-site-black bg-light-grey'>
-            <tr className='border-b border-medium-grey'>
-              {isBulkActive && (
-                <td key='bulk' className='p-4 text-base font-light text-gray-500 whitespace-nowrap'>
-                  <input
-                    className='w-4 h-4'
-                    type='checkbox'
-                    id={`checkbox-`}
-                    onChange={() => handleAllBulk(currentItems)}
-                    checked={selectedIds?.length > 0 && selectedIds?.length === currentItems?.length}
-                  />
-                </td>
-              )}
-              {tableHeader?.map((item, key) => (
-                <th
-                  scope='col'
-                  className={`p-4 ${key === 0 || item?.textLeft ? 'text-left' : 'text-center'}`}
-                  key={key}
-                >
-                  {item.sorting ? (
-                    <span className={`flex items-center ${key === 0 ? 'justify-start' : 'justify-center'}  gap-1 `}>
-                      {capitalizeFunction(item.key)}{' '}
-                      {sortOrders[item.sortkey] ? (
-                        <TiArrowSortedUp
-                          className='cursor-pointer text-base mr-1'
-                          onClick={() => handleSortTable(item.sortkey)}
-                        />
-                      ) : (
-                        <TiArrowSortedDown
-                          className='cursor-pointer text-base mr-1'
-                          onClick={() => handleSortTable(item.sortkey)}
-                        />
-                      )}
-                    </span>
-                  ) : (
-                    capitalizeFunction(item.key)
-                  )}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems?.length > 0 &&
-              currentItems?.map((dataItem, dataKey) => (
-                <tr className={`bg-white ${dataKey !== currentItems?.length - 1 ? 'border-b' : ''}`} key={dataKey}>
-                  {isBulkActive && (
-                    <td key={dataKey} className='p-4 text-base font-light text-gray-500 whitespace-nowrap'>
-                      <input
-                        type='checkbox'
-                        className='w-4 h-4'
-                        id={`checkbox-${dataKey}`}
-                        onChange={() => handleBulk(dataItem)}
-                        checked={selectedIds?.includes(dataItem?.id)}
-                      />
-                    </td>
-                  )}
-                  {tableHeader?.map((item, key) => (
-                    <td
-                      className={`p-4 relative ${key === 0 || item?.textLeft ? 'text-left' : 'text-center'}`}
-                      onClick={item?.clickable ? () => handleOptions('', dataItem) : null}
-                      key={key}
-                      ref={dropdownRef}
-                    >
-                      {item?.key === 'Status' || item?.key === 'Replied' ? (
-                        <>
-                          {dataItem?.[item?.value] === true ? (
-                            <span className='flex justify-center'>
-                              <img src={activeicon} alt='' />
-                            </span>
-                          ) : (
-                            <span className='flex justify-center'>
-                              <img src={inactiveicon} alt='' />
-                            </span>
-                          )}
-                        </>
-                      ) : item.key === 'Actions' ? (
-                        <div
-                          className={`flex items-center justify-center ${item.permissions ? 'md:gap-4 gap-3' : 'gap-1'}`}
-                        >
-                          {item.permissions && (
-                            <span
-                              className={`${dataItem?.permissionsType === 1 ? 'bg-site-green/10 text-site-green' : 'bg-primary-blue/10 text-primary-blue'} text-nowrap rounded-lg py-[6px] px-3 text-sm leading-[21px] font-semibold`}
-                            >
-                              {dataItem?.permissionsType === 1 ? 'Assign permissions' : 'Manager permissions'}
-                            </span>
-                          )}
-                          {isLoginButton && (
-                            <ToolTip tooltip={'Login'} position={'top center'}>
-                              <button>
-                                <SlLock
-                                  className='text-dark-grey hover:text-site-red'
-                                  fontSize={'20px'}
-                                  onClick={() => handleOptions(LOGINUSER, dataItem)}
-                                />
-                              </button>
-                            </ToolTip>
-                          )}
-                          {isView && (
-                            <ToolTip tooltip={'View'} position={'top center'}>
-                              <button>
-                                <SlEye
-                                  className='text-dark-grey hover:text-primary-blue'
-                                  fontSize={'20px'}
-                                  onClick={() => handleOptions(VIEW, dataItem)}
-                                />
-                              </button>
-                            </ToolTip>
-                          )}
-                          {isEdit && (
-                            <ToolTip tooltip={'Edit'} position={'top center'}>
-                              <button>
-                                <RiEdit2Line
-                                  className='text-dark-grey hover:text-site-yellow'
-                                  fontSize={'20px'}
-                                  onClick={() => handleOptions(UPDATE, dataItem)}
-                                />
-                              </button>
-                            </ToolTip>
-                          )}
-                          {isDelete && (
-                            <ToolTip tooltip={'Delete'} position={'top right'}>
-                              <button>
-                                <TbTrash
-                                  className='text-dark-grey hover:text-site-red'
-                                  fontSize={'20px'}
-                                  onClick={(e) =>
-                                    location?.pathname?.includes(paths?.owner?.items) ||
-                                    location?.pathname?.includes(paths?.manager?.items)
-                                      ? handleDeleteDropdown(e, dataKey, dataItem)
-                                      : handleOptions(DELETE, dataItem)
-                                  }
-                                />
-                              </button>
-                            </ToolTip>
-                          )}
-                        </div>
-                      ) : item.key === 'S.No.' ? (
-                        dataKey + 1
-                      ) : item.key === 'Cart' ? (
-                        <div>
-                          <Button
-                            onlyIcon
-                            {...(isOpen === 'cart'
-                              ? {
-                                  primary: dataItem?.item_id === selectedIdForCart ? true : false,
-                                }
-                              : { lightBlueBg: true })}
-                            onClick={(e) => {
-                              toggleDropdown(e, 'cart', dataKey)
-                              if (dataItem?.case_size !== null) {
-                                setCartType('case_unit')
-                                setCase_size(dataItem?.case_size?.size)
-                              } else {
-                                setCartType('full_unit')
-                              }
-                              if (location?.pathname?.includes(paths?.owner?.inventory || paths?.manager?.inventory)) {
-                                setselectedIdForCart(dataItem?.item_id)
-                              } else {
-                                setselectedIdForCart(dataItem?.id)
-                              }
-                            }}
-                          >
-                            <MdOutlineShoppingCart fontSize={'20px'} />
-                          </Button>
-                        </div>
-                      ) : item.key === 'Edit Quantity' ? (
-                        <div>
-                          <Button
-                            onlyIcon
-                            {...(isOpenInventory === 'editQuantity'
-                              ? {
-                                  primary: dataItem?.item_id === selectedIdForQty ? true : false,
-                                }
-                              : { lightBlueBg: true })}
-                            onClick={(e) => {
-                              toggleInventoryDropdown(e, 'editQuantity', dataKey)
-                              if (location?.pathname?.includes(paths?.owner?.inventory || paths?.manager?.inventory)) {
-                                setSelectedIdForQty(dataItem?.item_id)
-                                setEditInventoryCount(dataItem?.quantity)
-                              }
-                            }}
-                          >
-                            <RiEdit2Line className='text-dark-grey' fontSize={'20px'} />
-                          </Button>
-                        </div>
-                      ) : item.nameWithSublabel ? (
-                        <div className='flex items-center gap-5'>
-                          <img
-                            src={dataItem?.[item?.productImg] ? dataItem?.[item?.productImg] : noImage}
-                            alt='product-img'
-                            className='w-10 h-10 flex-shrink-0'
-                          />
-                          <p>
-                            <span className='block'>{dataItem?.[item?.value]}</span>
-                            <span className='block text-xs text-dark-grey'>{dataItem?.[item?.subValue]}</span>
-                          </p>
-                        </div>
-                      ) : item.orderStatus ? (
-                        <span
-                          className={`${dataItem?.orderType === 1 ? 'bg-site-green/10 text-site-green' : 'bg-[#FF00001A]/10 text-site-red'} text-nowrap rounded-lg py-[6px] px-3 text-sm leading-[21px] font-semibold`}
-                        >
-                          {dataItem?.[item?.value]}
-                        </span>
-                      ) : item.cell ? (
-                        item.cell(dataItem)
-                      ) : (
-                        handeldataShow(dataItem, item)
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            <td colSpan={tableHeader?.length}>
-              {currentItems?.length === 0 && (
-                <>
-                  <div className='flex flex-col items-center justify-center w-full py-4'>
-                    <img src={NoDataFoundImg} alt='no-data-found' />
-                    <Paragraph text16 className={'font-semibold'}>
-                      Data not found..!!
-                    </Paragraph>
-                  </div>
-                </>
-              )}
-            </td>
-          </tbody>
-        </table>
+       
+          <table className='border-collapse h-[500px] w-[1150px] border border-green-800 table-auto'>
+      
+       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+        ItemId
+       </th>
+      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+        ItemName
+      </th>
+      <th  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+        BrandName
+      </th>
+      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+        Category
+      </th>
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+  SubCategory
+</th>
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+  UnitSize
+</th>
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+  Actions
+</th>
+            
+{currentItems?.length > 0 && (
+  <tbody className="bg-white divide-y divide-gray-200">
+    {currentItems.map((dataItem, dataKey) => {
+      console.log("hello from current items map");
+      console.log(currentItems);
+      console.log(dataItem);
+
+      return (
+        <tr key={dataKey}>
+
+          <td className="whitespace-nowrap">{dataItem.itemId}</td>
+          <td className="px-6 py-4 whitespace-nowrap">{dataItem.ItemName}</td>
+          <td className="px-6 py-4 whitespace-nowrap">{dataItem.BrandName}</td>
+          <td className="px-6 py-4 whitespace-nowrap"> {dataItem.Category}</td>
+           <td className="px-6 py-4 whitespace-nowrap">{dataItem.Subcategory}</td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            {dataItem.unitSize}
+          </td>
+          <td>
+          <button  className="text-indigo-600 hover:text-indigo-900" onClick={()=>handleOptions(UPDATE,dataItem)}>Edit</button>
+                    <button className="ml-2 text-red-600 hover:text-red-900" onClick={()=>  handleDeleteItems(dataItem.itemId)}>Delete</button>
+               
+          </td>
+        </tr>
+      );
+    })}
+  </tbody>
+)}</table>
         {loader && (
           <span className='flex items-center justify-center h-full'>
             <FaSpinner size={30} className='animate-spin text-gray-500' />
@@ -463,187 +311,7 @@ function TableLayout(props) {
         )}
       </div>
 
-      {isOpen === 'delete' && (
-        <TableDropDownWrap open={isOpen} onClose={closeDropdown} dropdownRef={dropdownRef}>
-          <div
-            className='origin-top-right p-4 absolute rounded-lg rounded-se-none shadow-cardShadow bg-white z-10 sm:min-w-[370px] min-w-[300px] max-[575px]:!left-[inherit] max-[575px]:!right-3 '
-            style={{
-              top: dropdownPosition.top,
-              left: dropdownPosition.left - 320,
-            }}
-            ref={dropdownRef}
-          >
-            <Paragraph text18 className={'font-semibold pb-3'}>
-              Delete Confirmation
-            </Paragraph>
-            <div className='border-t border-b border-medium-grey py-3 mb-3'>
-              <div className='bg-site-red/10 rounded-[4px] px-4 py-2 flex items-center gap-[10px]'>
-                <div className='bg-white w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden flex items-center justify-center'>
-                  <img src={itemData?.item_image ? itemData?.item_image : noImage} alt='product-img' />
-                </div>
-                <div>
-                  <Paragraph text14 className={'font-normal'}>
-                    {itemData?.item_name ? itemData?.item_name : '--'}
-                  </Paragraph>
-                  {itemData?.tare_or_weight && (
-                    <Paragraph text14 className={'font-normal'}>
-                      {`${itemData?.tare_or_weight ?? '-'} ${itemData?.tare_or_weight_unit_of_measure?.measure_name ?? '-'}`}
-                    </Paragraph>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className='flex items-center justify-end gap-4'>
-              <Button secondary onClick={closeDropdown}>
-                Cancel
-              </Button>
-              <button
-                className='rounded-lg bg-site-red text-white flex items-center justify-center px-4 py-2'
-                onClick={() => {
-                  handleDeleteApiCall(itemData)
-                  setIsOpen(false)
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </TableDropDownWrap>
-      )}
-
-      {isOpen === 'cart' && (
-        <TableDropDownWrap open={isOpen} onClose={closeDropdown} dropdownRef={dropdownRef}>
-          <div
-            className='p-4 absolute rounded-lg border border-primary-blue bg-white z-10 min-w-[155px]'
-            style={{
-              top: dropdownPosition.top,
-              left: dropdownPosition.left - 120,
-            }}
-          >
-            <Paragraph text18 className={'font-semibold pb-3 text-center'}>
-              {cartType === 'case_unit' ? `case of ${case_size}` : 'Full Unit'}
-            </Paragraph>
-            <div className='flex items-center justify-between rounded-[10px] border border-medium-grey p-1 gap-4 mb-3'>
-              <button
-                className='w-8 h-8 rounded-[4px] bg-light-grey text-site-black flex items-center justify-center'
-                onClick={Decrement}
-              >
-                <FiMinus />
-              </button>
-              <span className='text-site-black  leading-[30px] font-bold'>{count}</span>
-              <button
-                className='w-8 h-8 rounded-[4px] bg-light-grey text-site-black flex items-center justify-center'
-                onClick={Increment}
-              >
-                <FiPlus />
-              </button>
-            </div>
-            <Button
-              primary
-              onClick={() => {
-                handleAddtoCart(cartData, cartType)
-                setIsOpen(false)
-              }}
-            >
-              Add To Cart
-            </Button>
-          </div>
-        </TableDropDownWrap>
-      )}
-      {isOpenInventory === 'editQuantity' && (
-        <TableDropDownWrap open={isOpenInventory} onClose={closeInventoryDropdown} dropdownRef={dropdownInventoryRef}>
-          <div
-            className='p-4 absolute rounded-lg border border-primary-blue bg-white z-10 min-w-[155px]'
-            style={{
-              top: inventoryDropdownPosition.top,
-              left: inventoryDropdownPosition.left - 120,
-            }}
-          >
-            <Paragraph text18 className={'font-semibold pb-3 text-center'}>
-              Edit Inventory
-            </Paragraph>
-            <div className='flex items-center justify-between rounded-[10px] border border-medium-grey p-1 gap-4 mb-3'>
-              <button
-                className='w-8 h-8 rounded-[4px] bg-light-grey text-site-black flex items-center justify-center'
-                onClick={DecrementInventoryCart}
-              >
-                <FiMinus />
-              </button>
-              <span className='text-site-black leading-[30px] font-bold'>
-                <input
-                  type='number'
-                  value={editInventoryCount}
-                  onChange={(e) => {
-                    if (e.target.value >= 0) {
-                      setEditInventoryCount(e.target.value)
-                    }
-                  }}
-                  className='text-site-black bg-transparent border-none w-[40px]  text-center'
-                />
-              </span>
-              <button
-                className='w-8 h-8 rounded-[4px] bg-light-grey text-site-black flex items-center justify-center'
-                onClick={IncrementInventoryCart}
-              >
-                <FiPlus />
-              </button>
-            </div>
-            <div className='flex justify-center'>
-              <Button
-                primary
-                onClick={() => {
-                  if (
-                    editInventoryCount === '' ||
-                    isNaN(Number(editInventoryCount)) ||
-                    Number(editInventoryCount) < 0
-                  ) {
-                    dispatch(
-                      ToastShow({
-                        message: 'Please add a valid quantity',
-                        type: 'error',
-                      }),
-                    )
-                  } else {
-                    handleInventoryQuantity(InventoryData)
-                    setIsOpenInventory(false)
-                  }
-                }}
-              >
-                Update
-              </Button>
-            </div>
-          </div>
-        </TableDropDownWrap>
-      )}
-
-      <div className='flex md:flex-nowrap flex-wrap justify-between gap-3 items-center mt-6 mb-0'>
-        {totalCount > 1 && (
-          <div className='entries'>{`Showing ${startEntry} to ${endEntry} of ${totalCount} entries`}</div>
-        )}
-        {pageCount > 1 && (
-          <ReactPaginate
-            breakLabel='...'
-            nextLabel={<PiArrowRightBold fontSize={'18px'} />}
-            onPageChange={handlePageClick}
-            pageCount={pageCount}
-            previousLabel={<PiArrowLeftBold fontSize={'18px'} />}
-            renderOnZeroPageCount={null}
-            containerClassName={'pagination'}
-            pageClassName={'pageClass'}
-            forcePage={itemOffset / itemsPerPage}
-            pageRangeDisplayed={3}
-            marginPagesDisplayed={2}
-            pageLinkClassName='page-link'
-            previousClassName='page-item'
-            previousLinkClassName='page-link'
-            nextClassName='page-item'
-            nextLinkClassName='page-link'
-            breakClassName='page-item'
-            breakLinkClassName='page-link'
-            activeClassName='active'
-          />
-        )}
-      </div>
+      
     </div>
   )
 }

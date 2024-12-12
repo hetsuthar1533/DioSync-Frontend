@@ -3,8 +3,9 @@ import axios from 'axios'
 import { ToastShow } from '../redux/slices/toastSlice'
 import { API } from '../apiEndPoints/apiEndPoints'
 
-const BASE_URL = process.env.REACT_APP_API_URL
+// const BASE_URL = process.env.REACT_APP_API_URL
 
+const BASE_URL="http://localhost:1234"
 const setupAxios = (store) => {
   axios.interceptors.request.use((request) => {
     const storeData = store.getState()
@@ -83,12 +84,29 @@ const setupAxios = (store) => {
 
 export default setupAxios
 
-export function axiosGet(url, data = null) {
-  return axios.get(`${BASE_URL}${url}`, {
-    params: data,
-  })
+// export async function axiosGet(url, data = null) {
+//   console.log(`${BASE_URL}${url}`);
+  
+//   const data2= await axios.get(`${BASE_URL}${url}`, {
+//     params: data,
+//   })
+// console.log("hi this is me data2 inside axios middlware",data2)
+//   return data2
+// }
+export async function axiosGet(url, data = null) {
+  console.log(`hi i am calling this ${BASE_URL}${url}`);
+  
+  try {
+    const response = await axios.get(`${BASE_URL}${url}`, {
+      params: data,
+    });
+    console.log("hi this is me data2 inside axios middleware", response);
+    return response;
+  } catch (error) {
+    console.error("Error in axiosGet:", error);
+    throw error; // Rethrow the error if you want to handle it later
+  }
 }
-
 export function axiosPost(url, data, headers) {
   return axios.post(`${BASE_URL}${url}`, data, headers ?? {})
 }
@@ -110,6 +128,7 @@ export const axiosPut = (url, data) => {
   return axios.put(`${BASE_URL}${url}`, data)
 }
 
-export const axiosDelete = (url, data) => {
-  return axios.delete(`${BASE_URL}${url}`, { data })
+export const axiosDelete = (url, data=null) => {
+  console.log(url)
+  return axios.delete(`${BASE_URL}${url}`,  data )
 }
