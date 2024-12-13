@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux'
 import { hideLoader, showLoader } from '../../../redux/slices/siteLoaderSlice'
 import BulkHeader from '../../../components/themeComponents/BulkHeader'
 import { BulkPerformAction } from '../../../services/commonService'
+import { ItemData } from '../../../redux/slices/ItemSlice'
 import axios from 'axios'
 const ItemsListing = () => {
   const dispatch = useDispatch()
@@ -113,6 +114,8 @@ const ItemsListing = () => {
     setTotalCount(count)
     setCurrentItems(results)
     console.log("hi i am cuureent item ")
+    dispatch(ItemData(response))
+    
     setPageCount(Math.ceil(count / itemsPerPage))
     setTotalItemsOnPage(results.length)
     dispatch(hideLoader())

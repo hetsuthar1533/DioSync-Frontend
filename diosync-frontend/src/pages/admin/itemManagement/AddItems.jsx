@@ -1,4 +1,4 @@
-import { Form, Formik } from 'formik'
+import {  Formik } from 'formik'
 import React, { useState, useEffect } from 'react'
 import FormLabel from '../../../components/core/typography/FormLabel'
 import InputType from '../../../components/core/formComponents/InputType'
@@ -14,10 +14,10 @@ import UploadFile from '../../../components/core/formComponents/FileInput'
 import { EnumFileType } from '../../../constants/commonConstants'
 import FileInput from '../../../components/core/formComponents/FileInput'
 
+import { useDispatch, useSelector } from 'react-redux'
+
 function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
-  const [categoriesList, setCategoriesList] = useState([])
-  const [subCategoriesList, setSubCategoriesList] = useState([])
-  const [caseSizeList, setCaseSizeList] = useState([])
+
   const [defaultInitialValues, setDefaultInitialValues] = useState({
   
 
@@ -44,60 +44,10 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
     }
   }, [selectedItem])
 
-  useEffect(() => {
-    fetchCategories()
-    fetchAllSubCategories()
-    fetchAllCaseSize()
-  }, [])
-  const fetchAllCaseSize = async () => {
-    try {
-      const response = await GetAllCaseSize()
-      if (response?.data?.status === 200) {
-        const formattedData = response?.data?.data.map((subcategory) => ({
-          label: subcategory.name,
-          value: subcategory.id,
-        }))
-        setCaseSizeList(formattedData)
-      }
-    } catch (error) {
-      console.error('Error fetching subcategories:', error)
-    }
-  }
-
-  const fetchCategories = async () => {
-    try {
-      const response = await GetAllCategories()
-      if (response?.data?.status === 200) {
-        const formattedData = response?.data?.data.map((category) => ({
-          label: category.name,
-          value: category.id,
-        }))
-        setCategoriesList(formattedData)
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    }
-  }
-  const fetchAllSubCategories = async () => {
-    try {
-      const response = await GetAllSubCategories()
-      if (response?.data?.status === 200) {
-        const formattedData = response?.data?.data.map((subcategory) => ({
-          label: subcategory.Subcategory_name,
-          value: subcategory.id,
-        }))
-        setSubCategoriesList(formattedData)
-      }
-    } catch (error) {
-      console.error('Error fetching subcategories:', error)
-    }
-  }
-  const handleCallListApi = () => {
-    handleCloseModal()
-    getItemsData()
-  }
+ 
 
   const handlesubmit = async (data) => {
+    
     console.log(data,"from onsubmit");
     
     if (selectedItem?.itemId) {
@@ -115,7 +65,7 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
       
       const response = await UpdateItems(bodyData, selectedItem?.itemId)
       if (response?.data?.status === 200) {
-        handleCallListApi()
+      getItemsData()
       }
     } else {
       const bodyData = new FormData()
@@ -130,7 +80,7 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
       bodyData.append('status', data?.status)
       const response = await ItemsApiAdd(bodyData)
       if (response?.status === 200) {
-        handleCallListApi()
+        getItemsData()
       }
     }
   }
@@ -143,7 +93,7 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
    
     >
       {({  handleBlur, setFieldValue, values, errors }) => (
-        <Form className='grid grid-cols-12 gap-4' onSubmit={handlesubmit} >
+        <form className='grid grid-cols-12 gap-4' onSubmit={()=>handlesubmit(values)} >
           <div className='md:col-span-12 col-span-12'>
            
           </div>
@@ -179,7 +129,7 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
               {selectedItem?.itemId ? 'Edit' : 'Save'}
             </Button>
           </div>
-        </Form>
+        </form>
       )}
     </Formik>
   )
