@@ -1,5 +1,6 @@
 export const API = {
   AUTH: {
+    // LOGIN: '/accounts/login',
     LOGIN: '/accounts/login',
     LOGOUT: '/accounts/logout',
     REFRESH_TOKEN: '/accounts/token/refresh',

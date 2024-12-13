@@ -3,7 +3,8 @@ import axios from 'axios'
 import { ToastShow } from '../redux/slices/toastSlice'
 import { API } from '../apiEndPoints/apiEndPoints'
 
-const BASE_URL = process.env.REACT_APP_API_URL
+const BASE_URL = "http://localhost:1234"
+console.log(BASE_URL)
 
 const setupAxios = (store) => {
   axios.interceptors.request.use((request) => {
@@ -90,7 +91,7 @@ export function axiosGet(url, data = null) {
 }
 
 export function axiosPost(url, data, headers) {
-  return axios.post(`${BASE_URL}${url}`, data, headers ?? {})
+  return axios.post(`${BASE_URL}${url}`, data, headers ?? {});
 }
 
 export const axiosConfig = (method, url, config, data) => {
