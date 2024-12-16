@@ -61,7 +61,7 @@ function Login() {
     console.log('Data in handleTempPwdChanged:', data);
 
     // Dispatch token and user type actions
-    dispatch(setToken(data?.token));
+    dispatch(setToken(data?.accessToken));
     dispatch(setRefreshToken(data?.refreshToken));
     dispatch(setUserType(data?.user_type));
 
@@ -125,7 +125,7 @@ function Login() {
     console.log('Response Data:', response.data);
 
     const { status, data } = response;
-    if (status === 200 && data?.token) {
+    if (status === 200 && data?.accessToken) {
       if (data?.is_temp_pwd_changed) {
         // console.log("first true");
         

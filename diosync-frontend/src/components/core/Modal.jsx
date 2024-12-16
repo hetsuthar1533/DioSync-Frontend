@@ -26,7 +26,7 @@ function Modal({ open, onClose, header, children, ...props }) {
   }, [open])
   if (!open) return null
 
-  return ReactDOM.createPortal(
+  return (
     <div
       onClick={onClose}
       className='fixed inset-0 flex justify-center items-center transition-colors z-[25] bg-black/20'
@@ -50,9 +50,7 @@ function Modal({ open, onClose, header, children, ...props }) {
         )}
         {children}
       </div>
-    </div>,
-    document.getElementById('modal-root'),
-  )
+    </div>)  
 }
 
 export default Modal

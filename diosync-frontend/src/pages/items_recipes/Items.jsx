@@ -53,6 +53,7 @@ function Items() {
     const fetchCategories = async () => {
       try {
         const response = await GetAllCategories()
+        console.log(response)
         if (response?.data?.status === 200) {
           const formattedData = response?.data?.data.map((category) => ({
             label: category.name,

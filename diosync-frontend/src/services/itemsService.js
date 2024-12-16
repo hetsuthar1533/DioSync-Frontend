@@ -6,11 +6,13 @@ export const ItemsApiAdd = (data) => {
 }
 
 export const GetItems = (queryString) => {
-  return axiosGet(`${API.ADMIN.ITEMS}${queryString}`)
+  console.log(API.ADMIN.ITEMS)
+  return axiosGet(`${API.ADMIN.ITEMS}`)
 }
 
 export const DeleteItems = (id) => {
-  return axiosDelete(`${API.ADMIN.ITEMS}/${id}`)
+  console.log("hi i am id inside delte items services",id)
+  return axiosDelete(`${API.ADMIN.DELETE_ITEM}/${id}`)
 }
 
 export const UpdateItems = (data, id) => {

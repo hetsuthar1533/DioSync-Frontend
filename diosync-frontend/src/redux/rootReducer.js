@@ -8,7 +8,7 @@ import venueReducer from './slices/ownerVenueSlice'
 import loadDataReducer from './slices/loadDataSlice'
 import generalDataReducer from './slices/generalDataSlice'
 import cartSupplierReducer from './slices/cartSupplierSlice'
-
+import itemReducer from './slices/ItemSlice'
 const persistConfig = {
   key: 'DioSync',
   storage: sessionStorage,
@@ -23,6 +23,7 @@ const rootReducer = combineReducers({
   loadData: loadDataReducer,
   generalData: generalDataReducer,
   cartSupplier: cartSupplierReducer,
+  Item:itemReducer
 })
 
 export default persistReducer(persistConfig, rootReducer)

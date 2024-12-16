@@ -18,7 +18,7 @@ export const UpdateCategories = (data, id) => {
 }
 
 export const GetAllCategories = () => {
-  return axiosGet(`${API.ADMIN.CATEGORIESALL}`)
+  return axiosGet(`${API.ADMIN.ITEMS}`)
 }
 
 export const BulkCategoriesActiveInactive = (data) => {
