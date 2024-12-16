@@ -18,27 +18,27 @@ function BulkHeader({
   return (
     <>
       <div className='md:col-span-6 col-span-12'>
-        <SearchFilter
+        {/* <SearchFilter
           setSearchItem={setSearchItem}
           searchItem={searchItem}
           placeholder={'Search'}
           className={'sm:w-auto w-full'}
           iconRight
           sm
-        />
+        /> */}
       </div>
       <div className='md:col-span-6 col-span-12'>
         <div className='flex items-center justify-end sm:flex-nowrap flex-wrap sm:gap-4 gap-3'>
-          <SelectType
+          {/* <SelectType
             sm
             options={tableFilter}
             placeholder={'select'}
             onChange={(option) => handleSelectAction(option?.value)}
             value={tableFilter?.find((option) => option?.value === selectedAction) || ''}
-          ></SelectType>
-          <Button primary onClick={handleApplyAction} disabled={!selectedIds?.length > 0 || !selectedAction}>
+          ></SelectType> */}
+          {/* <Button primary onClick={handleApplyAction} disabled={!selectedIds?.length > 0 || !selectedAction}>
             Apply
-          </Button>
+          </Button> */}
           <Button primary onClick={handleAddFun}>
             <FiPlus fontSize={'18px'} />
             {addName}

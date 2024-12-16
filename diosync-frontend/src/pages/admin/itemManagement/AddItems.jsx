@@ -25,9 +25,8 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
     BrandName: '',
     Category: '',
     Subcategory: '',
-    barcode: '',
-    unit_size: '',
-    case_size: '',
+    unitSize: '',
+    
     status: true,
   })
 
@@ -38,7 +37,7 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
         BrandName: selectedItem?.BrandName,
         Category: selectedItem?.Category,
         Subcategory: selectedItem?.Subcategory,
-        unit_size: selectedItem?.unitSize,
+        unitSize: selectedItem?.unitSize,
         status: selectedItem?.status,
       })
     }
@@ -58,7 +57,7 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
       bodyData.append('Category', data?.Category)
       bodyData.append('Subcategory', data?.Subcategory)
       bodyData.append('barcode', data?.barcode)
-      bodyData.append('unit_size', data?.unit_size)
+      bodyData.append('unitSize', data?.unitSize)
       bodyData.append('case_size', data?.case_size)
       bodyData.append('status', data?.status)
       console.log("hi i am boday data",bodyData);
@@ -75,9 +74,10 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
       bodyData.append('category', data?.category)
       bodyData.append('Subcategory', data?.Subcategory)
       bodyData.append('barcode', data?.barcode)
-      bodyData.append('unit_size', data?.unit_size)
+      bodyData.append('unitSize', data?.unitSize)
       bodyData.append('case_size', data?.case_size)
       bodyData.append('status', data?.status)
+      console.log(bodyData)
       const response = await ItemsApiAdd(bodyData)
       if (response?.status === 200) {
         getItemsData()
@@ -90,10 +90,11 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
       enableReinitialize
       initialValues={defaultInitialValues}
       validationSchema={addItemValidationSchema}
+      onSubmit={handlesubmit}
    
     >
       {({  handleBlur, setFieldValue, values, errors }) => (
-        <form className='grid grid-cols-12 gap-4' onSubmit={()=>handlesubmit(values)} >
+        <form className='grid grid-cols-12 gap-4'  >
           <div className='md:col-span-12 col-span-12'>
            
           </div>
@@ -117,7 +118,7 @@ function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
           </div>
           <div className='md:col-span-6 col-span-12'>
             <FormLabel>Unit size</FormLabel>
-            <InputType placeholder='Unit Size' type='text' name='unit_size' onBlur={handleBlur} />
+            <InputType placeholder='Unit Size' type='text' name='unitSize' onBlur={handleBlur} />
           </div>
    
           <div className='md:col-span-6 col-span-12'>
