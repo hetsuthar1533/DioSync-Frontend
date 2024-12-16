@@ -51,7 +51,8 @@ export const API = {
     ITEMS: '/fetchItem',
     UPDATE_ITEM:"/editItem",
     DELETE_ITEM:"/deleteItem",
-    ADD_ITEM:"/addItem"
+    ADD_ITEM:"/addItem",
+    Contact:"/contactbydate"
   }
     // INGREDIENTS: '/admin-panel/ingredients',
   //   INGREDIENTSALL: '/admin-panel/ingredients/all',

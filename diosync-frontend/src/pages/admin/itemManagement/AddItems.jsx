@@ -1,138 +1,159 @@
-import {  Formik } from 'formik'
-import React, { useState, useEffect } from 'react'
-import FormLabel from '../../../components/core/typography/FormLabel'
-import InputType from '../../../components/core/formComponents/InputType'
-import Button from '../../../components/core/formComponents/Button'
-import SelectType from '../../../components/core/formComponents/SelectType'
-import SwitchToggle from '../../../components/core/formComponents/SwitchToggle'
-import { addItemValidationSchema } from '../../../validations/admin/addItemValidationSchema'
-import { ItemsApiAdd, UpdateItems } from '../../../services/itemsService'
-import { GetAllCategories } from '../../../services/categoryService'
-import { GetAllSubCategories } from '../../../services/subCategoryService'
-import { GetAllCaseSize } from '../../../services/caseSizeService'
-import UploadFile from '../../../components/core/formComponents/FileInput'
-import { EnumFileType } from '../../../constants/commonConstants'
-import FileInput from '../../../components/core/formComponents/FileInput'
+import React, { useState, useEffect } from 'react';
+import FormLabel from '../../../components/core/typography/FormLabel';
+import InputType from '../../../components/core/formComponents/InputType';
+import Button from '../../../components/core/formComponents/Button';
+import SwitchToggle from '../../../components/core/formComponents/SwitchToggle';
+import { ItemsApiAdd, UpdateItems } from '../../../services/itemsService';
 
-import { useDispatch, useSelector } from 'react-redux'
-
-function AddItems({ selectedItem, handleCloseModal, getItemsData,actions }) {
-
-  const [defaultInitialValues, setDefaultInitialValues] = useState({
-  
-
+function AddItems({ selectedItem, handleCloseModal, getItemsData }) {
+  const [formData, setFormData] = useState({
     ItemName: '',
     BrandName: '',
     Category: '',
     Subcategory: '',
-    barcode: '',
-    unit_size: '',
-    case_size: '',
+    unitSize: '',
     status: true,
-  })
+  });
 
   useEffect(() => {
     if (selectedItem) {
-      setDefaultInitialValues({
-        ItemName: selectedItem?.ItemName,
-        BrandName: selectedItem?.BrandName,
-        Category: selectedItem?.Category,
-        Subcategory: selectedItem?.Subcategory,
-        unit_size: selectedItem?.unitSize,
-        status: selectedItem?.status,
-      })
+      setFormData({
+        ItemName: selectedItem?.ItemName || '',
+        BrandName: selectedItem?.BrandName || '',
+        Category: selectedItem?.Category || '',
+        Subcategory: selectedItem?.Subcategory || '',
+        unitSize: selectedItem?.unitSize || '',
+        status: selectedItem?.status || true,
+      });
     }
-  }, [selectedItem])
+  }, [selectedItem]);
 
- 
+  // Handle input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    console.log(name);
+    console.log(value);
+    
+    
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-  const handlesubmit = async (data) => {
+  // Handle switch toggle
+  const handleSwitchChange = (value) => {
+    console.log("handle switch change",value);
     
-    console.log(data,"from onsubmit");
-    
-    if (selectedItem?.itemId) {
-      console.log("hi i am onsubmit",data)
-      const bodyData = new FormData()
-      bodyData.append('ItemName', data?.ItemName)
-      bodyData.append('BrandName', data?.BrandName)
-      bodyData.append('Category', data?.Category)
-      bodyData.append('Subcategory', data?.Subcategory)
-      bodyData.append('barcode', data?.barcode)
-      bodyData.append('unit_size', data?.unit_size)
-      bodyData.append('case_size', data?.case_size)
-      bodyData.append('status', data?.status)
-      console.log("hi i am boday data",bodyData);
-      
-      const response = await UpdateItems(bodyData, selectedItem?.itemId)
-      if (response?.data?.status === 200) {
-      getItemsData()
+    setFormData((prevData) => ({
+      ...prevData,
+      status: value,
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      console.log('Form submitted with data:', formData);
+      const bodyData = new FormData();
+      Object.keys(formData).forEach((key) => {
+        bodyData.append(key, formData[key]);
+      });
+
+      let response;
+      if (selectedItem?.itemId) {
+        console.log('Updating item with ID:', selectedItem.itemId);
+        response = await UpdateItems(formData, selectedItem.itemId);
+      } else {
+        console.log('Adding a new item...');
+        response = await ItemsApiAdd(formData);
       }
-    } else {
-      const bodyData = new FormData()
-    
-      bodyData.append('ItemName', data?.ItemName)
-      bodyData.append('BrandName', data?.BrandName)
-      bodyData.append('category', data?.category)
-      bodyData.append('Subcategory', data?.Subcategory)
-      bodyData.append('barcode', data?.barcode)
-      bodyData.append('unit_size', data?.unit_size)
-      bodyData.append('case_size', data?.case_size)
-      bodyData.append('status', data?.status)
-      const response = await ItemsApiAdd(bodyData)
-      if (response?.status === 200) {
-        getItemsData()
+
+      if (response?.data?.status === 200 || response?.status === 200) {
+        console.log('API call successful, refreshing data...');
+        getItemsData();
+        handleCloseModal();
+      } else {
+        console.error('API response error:', response);
       }
+    } catch (error) {
+      console.error('Error during form submission:', error);
     }
-  }
+  };
 
   return (
-    <Formik
-      enableReinitialize
-      initialValues={defaultInitialValues}
-      validationSchema={addItemValidationSchema}
-   
-    >
-      {({  handleBlur, setFieldValue, values, errors }) => (
-        <form className='grid grid-cols-12 gap-4' onSubmit={()=>handlesubmit(values)} >
-          <div className='md:col-span-12 col-span-12'>
-           
-          </div>
-          <div className='md:col-span-6 col-span-12'>
-            <FormLabel>Item name</FormLabel>
-            <InputType placeholder='Item name' type='text' name='ItemName'  onBlur={handleBlur} />
-          </div>
-          <div className='md:col-span-6 col-span-12'>
-            <FormLabel>Brand name</FormLabel>
-            <InputType placeholder='Brand name' type='text' name='BrandName' onBlur={handleBlur} />
-          </div>
-          <div className='md:col-span-6 col-span-12'>
-            <FormLabel>Category name</FormLabel>
-            <InputType placeholder='Category ' type='text' name='Category' onBlur={handleBlur} />
+    <form className="grid grid-cols-12 gap-4" onSubmit={handleSubmit}>
+      <div className="md:col-span-6 col-span-12">
+        <FormLabel>Item Name</FormLabel>
+        <InputType
+          placeholder="Item name"
+          type="text"
+          name="ItemName"
+          value={formData.ItemName}
+          onChange={handleChange}
+        />
+      </div>
 
-          </div>
-         
-          <div className='md:col-span-6 col-span-12'>
-          <FormLabel>Subcategory name</FormLabel>
-          <InputType placeholder='Subcategory' type='text' name='Subcategory' onBlur={handleBlur} />
-          </div>
-          <div className='md:col-span-6 col-span-12'>
-            <FormLabel>Unit size</FormLabel>
-            <InputType placeholder='Unit Size' type='text' name='unit_size' onBlur={handleBlur} />
-          </div>
-   
-          <div className='md:col-span-6 col-span-12'>
-            <FormLabel>Activate/deactivate</FormLabel>
-            <SwitchToggle onChange={(value) => setFieldValue('status', value)} isChecked={values?.status} />
-          </div>
-          <div className='col-span-12 text-end'>
-            <Button primary type='submit' >
-              {selectedItem?.itemId ? 'Edit' : 'Save'}
-            </Button>
-          </div>
-        </form>
-      )}
-    </Formik>
-  )
+      <div className="md:col-span-6 col-span-12">
+        <FormLabel>Brand Name</FormLabel>
+        <InputType
+          placeholder="Brand name"
+          type="text"
+          name="BrandName"
+          value={formData.BrandName}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="md:col-span-6 col-span-12">
+        <FormLabel>Category</FormLabel>
+        <InputType
+          placeholder="Category"
+          type="text"
+          name="Category"
+          value={formData.Category}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="md:col-span-6 col-span-12">
+        <FormLabel>Subcategory</FormLabel>
+        <InputType
+          placeholder="Subcategory"
+          type="text"
+          name="Subcategory"
+          value={formData.Subcategory}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="md:col-span-6 col-span-12">
+        <FormLabel>Unit Size</FormLabel>
+        <InputType
+          placeholder="Unit size"
+          type="text"
+          name="unitSize"
+          value={formData.unitSize}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="md:col-span-6 col-span-12">
+        <FormLabel>Activate/Deactivate</FormLabel>
+        <SwitchToggle
+          onChange={handleSwitchChange}
+          value={formData.status}
+        />
+      </div>
+
+      <div className="col-span-12 text-end">
+        <Button primary type="submit">
+          {selectedItem?.itemId ? 'Edit' : 'Save'}
+        </Button>
+      </div>
+    </form>
+  );
 }
 
-export default AddItems
+export default AddItems;
