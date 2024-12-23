@@ -7,13 +7,16 @@ import Logo from '../../assets/images/logo.svg'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ForgotPassword, OtpVerification } from '../../services/authService'
 import { paths } from '../../routes/path'
-import { useDispatch } from 'react-redux'
+// import { useDispatch } from 'react-redux'
 import { hideLoader, showLoader } from '../../redux/slices/siteLoaderSlice'
 import { HiOutlineArrowLeft } from 'react-icons/hi2'
-
+import { useDispatch, useSelector } from 'react-redux';
+import { emailSelector, setEmail } from '../../redux/slices/userSlice.js'
+import { tokenSelector, setRefreshToken, setToken, removeToken, removeUser, setUserType, clearUser } from '../../redux/slices/userSlice.js'; // Adjust import path accordingly
 let timerId
 
 const OTP = () => {
+  // const email = useSelector((state)=>state.user.email)
   const inputRefs = useRef([])
   const dispatch = useDispatch()
   const { state } = useLocation()
@@ -22,7 +25,11 @@ const OTP = () => {
   const [otp, setOtp] = useState(Array(6).fill(''))
   const [showResendOtp, setShowResendOtp] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-
+    const email = useSelector(emailSelector)
+  
+  // const token = localStorage.getItem("token")
+  // console.log("token: " + token)
+  // const email = useSelector((state) => state.user.email); // Assuming email is stored in state.user.email
   useEffect(() => {
     if (countDown < 0 && timerId) {
       setCountDown(0)
@@ -40,11 +47,11 @@ const OTP = () => {
   }, [countDown])
 
   useEffect(() => {
-    if (!state?.email) {
+    if (!email) {
       navigate(paths?.auth?.forgotPassword)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.email])
+  }, [email])
 
   const handleChange = (e, index) => {
     const { value } = e.target
@@ -93,33 +100,55 @@ const OTP = () => {
     setShowResendOtp(false)
     setCountDown(120)
     await ForgotPassword({
-      email: state.email,
+      email: email,
     })
   }
 
   const OnSubmit = async () => {
-    dispatch(showLoader())
-    if (otp?.join?.('')?.length === 6 && state.email && typeof state.email === 'string') {
-      setErrorMessage('')
-      const params = {
-        email: state.email,
-        otp: String(otp?.join?.('')),
-      }
-      OtpVerification(params).then((response) => {
-        const { success, data, status } = response.data
+    dispatch(showLoader());
+    try {
+      if (otp?.join?.('')?.length === 6 && email && typeof email === 'string') {
+        setErrorMessage('');
+        const params = {
+          email: email,     
+          otp: String(otp?.join?.('')),
+          // token:token 
+        };
+        // setEmail(params.email);
+
+        console.log('Sending OTP verification request with params:', params);
+
+        const response = await OtpVerification(params);
+
+        console.log('OTP verification response:', response?.data);
+
+        const { success,  status } = response?.data || {};
         if (success && status === 200) {
+          console.log('Navigating to add new password page');
           navigate('/add-new-password', {
-            state: { secret: data?.secret },
-          })
+            state: { email: email },
+          });
+          dispatch(clearUser()); 
+          console.log(params.email)
+          dispatch(setEmail(params.email))// Clear user state upon successful verification
         } else {
-          setOtp(Array(6).fill(''))
+          console.error('OTP verification failed:', response?.data);
+          setOtp(Array(6).fill(''));
+          setErrorMessage(response?.data?.message || 'OTP verification failed');
         }
-      })
-    } else {
-      setErrorMessage('Please enter OTP')
+      } else {
+        setErrorMessage('Please enter OTP');
+      }
+    } catch (error) {
+      console.error('Error during OTP verification:', error);
+      setErrorMessage(error.response?.data?.message || 'An error occurred during OTP verification');
+    } finally {
+      dispatch(hideLoader());
     }
-    dispatch(hideLoader())
-  }
+  };
+
+
+
 
   return (
     <div className='bg-site-black lg:p-6 sm:p-4 p-3 min-h-screen'>

@@ -2,6 +2,7 @@ export const API = {
   AUTH: {
     // LOGIN: '/accounts/login',
     LOGIN: '/accounts/login',
+    SIGNUP: '/accounts/signup',
     LOGOUT: '/accounts/logout',
     REFRESH_TOKEN: '/accounts/token/refresh',
     // REFRESH_TOKEN: '/accounts/refresh',
@@ -10,7 +11,7 @@ export const API = {
     FORGOT: '/accounts/forget-password/send-mail',
     VERIFY_OTP: '/accounts/forget-password/verify-code',
     ADD_NEW_PASSWORD: '/accounts/forget-password/change-password',
-    CHANGE_PASSWORD: '/accounts/login/change-password', // for the first time login and need to change password
+    // CHANGE_PASSWORD: '/accounts/login/change-password', // for the first time login and need to change password
     RESET_PASSWORD: '/accounts/reset-password',
     UPDATE_PROFILE: '/accounts/profile',
     GET_PROFILE: '/accounts/profile',

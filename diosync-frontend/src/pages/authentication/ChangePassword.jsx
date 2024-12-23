@@ -18,12 +18,12 @@ function ChangePassword() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    if (!state?.secret) {
-      navigate(paths?.auth?.login)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.secret])
+  // useEffect(() => {
+  //   if (!state?.secret) {
+  //     navigate(paths?.auth?.login)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [state?.secret])
 
   const OnSubmit = async (data) => {
     dispatch(showLoader())
@@ -33,6 +33,7 @@ function ChangePassword() {
       confirm_new_password: data?.confirmPassword,
     }
     const response = await ChangePasswordFistTime(sentData)
+    console.log(response)
     const { success, status } = response?.data
     if (success && status === 200) {
       navigate(paths?.auth?.login)

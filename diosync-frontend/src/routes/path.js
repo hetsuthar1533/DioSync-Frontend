@@ -2,6 +2,7 @@ export const paths = {
   auth: {
     login: '/',
     loginUser: '/login',
+    signup:'/signup',
     addNewPassword: '/add-new-password',
     forgotPassword: '/forget-password',
     otp: '/otp',

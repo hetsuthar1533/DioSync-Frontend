@@ -18,6 +18,8 @@ const OrderDetail = lazy(() => import('../pages/history_orders/OrderDetail'))
 const StaffMember = lazy(() => import('../pages/settings/staff_manager/StaffMember'))
 
 const Login = lazy(() => import('../pages/authentication/Login'))
+const Signup = lazy(() => import('../pages/authentication/Signup'))
+
 const AddNewPassword = lazy(() => import('../pages/authentication/AddNewPassword'))
 const ForgetPassword = lazy(() => import('../pages/authentication/ForgetPassword'))
 const OTP = lazy(() => import('../pages/authentication/OTP'))
@@ -66,6 +68,14 @@ export const AuthRoutes = [
     element: Login,
     isback: false,
   },
+  {
+    id: 1,
+    path: paths.auth.signup,
+    name: 'Signup',
+    element: Signup,
+    isback: false,
+  },
+
   {
     id: 2,
     path: paths.auth.addNewPassword,

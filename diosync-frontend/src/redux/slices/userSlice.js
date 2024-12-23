@@ -5,6 +5,7 @@ const initialState = {
   refreshToken: null,
   user_Type: 1,
   user: null,
+  email:null
 }
 export const userSlice = createSlice({
   name: 'user',
@@ -12,6 +13,9 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload
+    },
+    setEmail: (state, action) => {
+      state.email = action.payload 
     },
     setUserType: (state, action) => {
       state.user_Type = action.payload ? action.payload : 1
@@ -39,6 +43,7 @@ export const userSlice = createSlice({
       state.token = null
       state.user_Type = null
       state.refreshToken = null
+      state.email = null
     },
   },
 })
@@ -47,7 +52,8 @@ export const userSelector = (state) => state.user.user
 export const userTypeSelector = (state) => state.user.user_Type
 export const tokenSelector = (state) => state.user.token
 export const refreshTokenSelector = (state) => state.user.refreshToken
-
+export const emailSelector = (state) => state.user.email
+console.log((state) => state.user.email)
 const { actions, reducer } = userSlice
 
 export const {
@@ -60,6 +66,7 @@ export const {
   removeUserType,
   removeUser,
   clearUser,
+  setEmail
 } = actions
 export const setuser = (data) => {
   setUser(data)

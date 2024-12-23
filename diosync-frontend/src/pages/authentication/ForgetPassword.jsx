@@ -13,19 +13,27 @@ import { forgetPasswordValidationSchema } from '../../validations/authentication
 import { useDispatch } from 'react-redux'
 import { hideLoader, showLoader } from '../../redux/slices/siteLoaderSlice'
 import { HiOutlineArrowLeft } from 'react-icons/hi2'
-
+import { setEmail } from '../../redux/slices/userSlice'
+// import { emailSelector } from '../../redux/slices/userSlice'
 function ForgetPassword() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const OnSubmit = async (data) => {
     dispatch(showLoader())
+    console.log("thai jaje have")
+    dispatch(setEmail(data.email));
+    
+    console.log("hii am only email:",data.email) // Set email in Redux store
     const response = await ForgotPassword({
       email: data.email,
     })
+    console.log("live ")
+
     const { success, status } = response.data
+    console.log(response?.data)
     if (success && status === 200) {
-      navigate(`${paths.auth.otp}`, { state: { email: data.email } })
+      navigate(`${paths.auth.otp}`)
     }
     dispatch(hideLoader())
   }

@@ -60,15 +60,14 @@ function Login() {
   async function handleTempPwdChanged(data, params) {
     console.log('Data in handleTempPwdChanged:', data);
 
-    // Dispatch token and user type actions
     dispatch(setToken(data?.accessToken));
     dispatch(setRefreshToken(data?.refreshToken));
     dispatch(setUserType(data?.user_type));
 
-    // Handle remember me functionality
+    console.log('Token after dispatch:', data?.accessToken);
+
     if (params) handleRememberMe(params);
 
-    // Fetch user data
     try {
       const userData = await GetUser();
       console.log('User data fetched:', userData);
@@ -77,7 +76,6 @@ function Login() {
         dispatch(setUser(userData?.data?.data));
       }
 
-      // Navigate based on user type
       console.log('User type:', data?.user_type);
       if (data?.user_type[0] === 'admin') {
         console.log('Navigating to admin dashboard');
@@ -90,9 +88,8 @@ function Login() {
         navigate(paths?.owner?.dashboard);
       } else {
         console.log('Navigating to default dashboard');
-        navigate(paths?.defaultDashboard); // Ensure you have a default dashboard path
+        navigate(paths?.defaultDashboard);
       }
-
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -120,17 +117,15 @@ function Login() {
   }
 
   async function handleLoginResponse(response, params) {
-    // Log the entire response object
     console.log('Response Object:', response);
     console.log('Response Data:', response.data);
 
     const { status, data } = response;
     if (status === 200 && data?.accessToken) {
       if (data?.is_temp_pwd_changed) {
-        // console.log("first true");
-        
+        console.log('Token:', data?.accessToken);
+
         await handleTempPwdChanged(data, params);
-        // console.log('data after temp change',data)
       } else {
         navigateToNewPassword(data);
       }
@@ -177,7 +172,7 @@ function Login() {
                 validationSchema={loginValidationSchema}
                 onSubmit={OnSubmit}
                 enableReinitialize
-              >
+              > 
                 {({ isSubmitting, values, handleChange }) => (
                   <Form className='xxl:w-3/4 xl:w-4/5 w-full'>
                     <div className='grid grid-cols-12 gap-4'>
@@ -212,6 +207,17 @@ function Login() {
                         <Button primary className={'w-full lg:!py-3'} type='submit' disabled={isSubmitting}>
                           Login
                         </Button>
+                      </div>
+                      <div className='col-span-12 text-center mt-4'>
+                        <Paragraph text12>
+                          Not a user yet?{' '}
+                          <Link
+                            to={paths.auth.signup}
+                            className='font-semibold text-primary-blue hover:text-site-black transition-all duration-300'
+                          >
+                            Sign Up
+                          </Link>
+                        </Paragraph>
                       </div>
                     </div>
                   </Form>

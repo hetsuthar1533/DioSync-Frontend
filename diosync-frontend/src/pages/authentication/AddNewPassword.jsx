@@ -10,35 +10,67 @@ import { addNewPasswordValidationSchema } from '../../validations/authentication
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ForgotAddNewPassword } from '../../services/authService'
 import { paths } from '../../routes/path'
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 import { hideLoader, showLoader } from '../../redux/slices/siteLoaderSlice'
-
+// import { setEmail } from '../../redux/slices/authSlice'
+import { emailSelector } from '../../redux/slices/userSlice'
 function AddNewPassword() {
-  const { state } = useLocation()
+  // const { state } = useLocation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const email = useSelector(emailSelector)
+  // console.log(email)
+  // console.log(email)
+    // const email = useSelector((state) => state.user.email); 
 
-  useEffect(() => {
-    if (!state?.secret) {
-      navigate(paths?.auth?.forgotPassword)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.secret])
+  // useEffect(() => {
+  //   if (!state?.secret) {
+  //     navigate(paths?.auth?.forgotPassword)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [state?.secret])
 
   const OnSubmit = async (data) => {
-    dispatch(showLoader())
+    dispatch(showLoader());
+console.log("email",email);
+   
     const sentData = {
-      secret: state.secret,
-      new_password: data?.newPassword,
-      confirm_new_password: data?.confirmPassword,
+        
+        // secret: state.secret, // Ensure the secret is included if needed
+        email:email,
+        new_password: data?.newPassword,
+        confirm_new_password: data?.confirmPassword,
+    };
+
+    try {
+        console.log('Sending new password data:', sentData); // Debug log
+
+        const response = await ForgotAddNewPassword(sentData);
+
+        console.log('New password response:', response); // Debug log
+
+        if (!response || !response.data) {
+            throw new Error('No response data received');
+        }
+
+        const { success, status } = response.data;
+        if (success && status === 200) {
+            navigate(paths.auth.login);
+        } else {
+            console.error('Password change failed:', response.data);
+        }
+    } catch (error) {
+        console.error('Error during password change:', error);
+    } finally {
+        dispatch(hideLoader());
     }
-    const response = await ForgotAddNewPassword(sentData)
-    const { success, status } = response?.data
-    if (success && status === 200) {
-      navigate(paths?.auth?.login)
-    }
-    dispatch(hideLoader())
-  }
+};
+
+
+
+
+
+
 
   return (
     <div className='bg-site-black lg:p-6 sm:p-4 p-3 min-h-screen'>

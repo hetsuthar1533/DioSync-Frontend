@@ -4,9 +4,14 @@ import { axiosGet, axiosPatch, axiosPost } from '../axios/axiosMiddleware'
 export const LoginUser = (data) => {
   return axiosPost(API?.AUTH?.LOGIN, data)
 }
+export const RegisterUser = (data) => {
+  return axiosPost(API?.AUTH?.SIGNUP, data)
+}
 
 export const ForgotPassword = (data) => {
+  console.log(data)
   return axiosPost(API?.AUTH?.FORGOT, data)
+  
 }
 
 export const OtpVerification = (data) => {
@@ -18,6 +23,7 @@ export const GetUser = () => {
 }
 
 export const ForgotAddNewPassword = (data) => {
+  console.log(data)
   return axiosPost(API?.AUTH?.ADD_NEW_PASSWORD, data)
 }
 
