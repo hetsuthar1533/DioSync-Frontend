@@ -98,19 +98,19 @@ console.log("email",email);
                 validationSchema={addNewPasswordValidationSchema}
                 onSubmit={OnSubmit}
               >
-                {({ isSubmitting }) => (
+                {({ isSubmitting,handleChange }) => (
                   <Form className='xxl:w-3/4 xl:w-4/5 w-full'>
                     <div className='grid grid-cols-12 gap-4'>
                       <div className='col-span-12'>
                         <FormLabel>New password</FormLabel>
-                        <InputType placeholder='Type here' type='password' name='newPassword' />
+                        <InputType placeholder='Type here' type='password' name='newPassword' onChange={handleChange} />
                         <Paragraph text12 className={'text-dark-grey mt-[6px]'}>
                           Must be at least 8 characters
                         </Paragraph>
                       </div>
                       <div className='col-span-12 mb-6'>
                         <FormLabel>Confirm password</FormLabel>
-                        <InputType placeholder='Type here' type='password' name='confirmPassword' />
+                        <InputType placeholder='Type here' type='password' name='confirmPassword' onChange={handleChange}  />
                         <Paragraph text12 className={'text-dark-grey mt-[6px]'}>
                           Must be at least 8 characters
                         </Paragraph>

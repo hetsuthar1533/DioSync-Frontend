@@ -69,12 +69,12 @@ function ForgetPassword() {
                 validationSchema={forgetPasswordValidationSchema}
                 onSubmit={OnSubmit}
               >
-                {({ isSubmitting }) => (
+                {({ isSubmitting,handleChange }) => (
                   <Form className='xxl:w-3/4 xl:w-4/5 w-full'>
                     <div className='grid grid-cols-12 gap-4'>
                       <div className='col-span-12 mb-6'>
                         <FormLabel>Email address</FormLabel>
-                        <InputType placeholder='Type here' type='text' name='email' />
+                        <InputType placeholder='Type here' type='text' name='email'  onChange={handleChange}/>
                       </div>
                       <div className='col-span-12'>
                         <Button primary className={'w-full lg:!py-3'} type='submit' disabled={isSubmitting}>

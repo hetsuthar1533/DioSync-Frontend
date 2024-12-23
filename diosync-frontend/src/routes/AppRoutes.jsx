@@ -33,7 +33,7 @@ const AppRoutes = () => {
               <route.element />
             </GuestRoute>
           }
-        />
+        /> 
       ))}
       <Route path='/commonelements' element={<CommonElement />} />
       <Route path='*' element={<NotFound />} />
