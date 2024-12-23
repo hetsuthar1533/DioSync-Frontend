@@ -2,7 +2,7 @@ import { API } from '../apiEndPoints/apiEndPoints'
 import { axiosGet, axiosPost, axiosDelete, axiosPut, axiosPatch } from '../axios/axiosMiddleware'
 
 export const ItemsApiAdd = (data) => {
-  return axiosPost(API.ADMIN.ITEMS, data)
+  return axiosPost(API.ADMIN.ADD_ITEM, data)
 }
 
 export const GetItems = (queryString) => {
@@ -16,7 +16,7 @@ export const DeleteItems = (id) => {
 }
 
 export const UpdateItems = (data, id) => {
-  return axiosPut(`${API.ADMIN.ITEMS}/${id}`, data)
+  return axiosPut(`${API.ADMIN.UPDATE_ITEM}/${id}`, data)
 }
 
 export const BulkItemsActiveInactive = (data) => {
@@ -49,4 +49,10 @@ export const GetAllItems = () => {
 
 export const GetAllItemsOfBarVenue = (id) => {
   return axiosGet(`${API.OWNER.ITEMSVENUE}/${id}`)
+}
+export const getAllContact=()=>{
+console.log(API.ADMIN.Contact);
+
+  return axiosGet(`${API.ADMIN.Contact}`)
+
 }
