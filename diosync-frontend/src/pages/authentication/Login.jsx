@@ -77,15 +77,15 @@ function Login() {
       }
 
       console.log('User type:', data?.user_type);
-      if (data?.user_type[0] === 'admin') {
+      if (data?.user_type === 'admin') {
         console.log('Navigating to admin dashboard');
         navigate(paths?.admin.dashboard);
-      } else if (data?.user_type[0] === 'manager') {
+      } else if (data?.user_type === 'manager') {
         console.log('Navigating to manager dashboard');
         navigate(paths.manager.dashboard);
-      } else if (data?.user_type[0] === 'owner') {
+      } else if (data?.user_type === 'owner') {
         console.log('Navigating to owner dashboard');
-        navigate(paths?.owner?.dashboard);
+        navigate(paths?.owner?.dashboard); 
       } else {
         console.log('Navigating to default dashboard');
         navigate(paths?.defaultDashboard);
@@ -101,6 +101,7 @@ function Login() {
       email: paramsData?.email,
       password: paramsData?.password,
     };
+    console.log('Params:', params);
     try {
       const response = await LoginUser(params);
       console.log('Response:', response);
@@ -172,17 +173,18 @@ function Login() {
                 validationSchema={loginValidationSchema}
                 onSubmit={OnSubmit}
                 enableReinitialize
-              > 
+              >
                 {({ isSubmitting, values, handleChange }) => (
                   <Form className='xxl:w-3/4 xl:w-4/5 w-full'>
                     <div className='grid grid-cols-12 gap-4'>
                       <div className='col-span-12'>
+                    {/* {console.log(values)} */}
                         <FormLabel>Email address</FormLabel>
-                        <InputType placeholder='Type here' type='text' name='email' />
+                        <InputType placeholder='Type here' type='text' name='email'  onChange={handleChange}/>
                       </div>
                       <div className='col-span-12'>
                         <FormLabel>Password</FormLabel>
-                        <InputType placeholder='Type here' type='password' name='password' />
+                        <InputType placeholder='Type here' type='password' name='password'  onChange={handleChange} />
                       </div>
                       <div className='col-span-12'>
                         <div className='flex items-center justify-between gap-3 mb-6'>

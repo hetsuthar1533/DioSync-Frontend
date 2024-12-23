@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthLeftWrapper from '../../components/containers/AuthLeftWrapper';
 import Paragraph from '../../components/core/typography/Paragraph';
-import { Form, Formik } from 'formik';
+import { Form, Formik, Field } from 'formik';
 import InputType from '../../components/core/formComponents/InputType';
 import Button from '../../components/core/formComponents/Button';
 import FormLabel from '../../components/core/typography/FormLabel';
@@ -14,17 +14,34 @@ import { hideLoader, showLoader } from '../../redux/slices/siteLoaderSlice';
 import { paths } from '../../routes/path';
 import { RegisterUser } from '../../services/authService';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function SignUp() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [userTypes, setUserTypes] = useState([]);
   const [defaultInitialValues] = useState({
     username: '',
     email: '',
     password: '',
     confirmPassword: '',
+    user_type: '',
     agreeToTerms: false,
   });
+
+  useEffect(() => {
+    // Fetch user types for dropdown
+    const fetchUserTypes = async () => {
+      try {
+        const response = await axios.post('http://localhost:1234/accounts/user-types');
+        setUserTypes(response.data);
+      } catch (error) {
+        console.error('Error fetching user types:', error);
+      }
+    };
+
+    fetchUserTypes();
+  }, []);
 
   async function OnSubmit(paramsData) {
     dispatch(showLoader());
@@ -33,13 +50,15 @@ function SignUp() {
       email: paramsData?.email,
       password: paramsData?.password,
       confirmPassword: paramsData?.confirmPassword,
+      user_type: paramsData?.user_type,
     };
     console.log('Params:', params);
-
+  
     try {
       const response = await RegisterUser(params);
       console.log('Response:', response);
       if (response && response.data) {
+        console.log('Response Data:', response.data);
         toast.success('User registered successfully! Please log in.');
         navigate(paths.auth.login);
       } else {
@@ -63,6 +82,7 @@ function SignUp() {
       dispatch(hideLoader());
     }
   }
+  
 
   return (
     <div className='bg-site-black lg:p-6 sm:p-4 p-3 min-h-screen'>
@@ -86,26 +106,53 @@ function SignUp() {
                 initialValues={defaultInitialValues}
                 validationSchema={signupValidationSchema}
                 onSubmit={OnSubmit}
-                enableReinitialize
+                validateOnChange={true}
+                validateOnBlur={true}
               > 
-                {({ isSubmitting, values, handleChange }) => (
+                {({ isSubmitting, values, handleChange, errors, touched }) => (
                   <Form className='xxl:w-3/4 xl:w-4/5 w-full'>
+                    {console.log('Errors:', errors)}
+                    {console.log('Touched:', touched)}
                     <div className='grid grid-cols-12 gap-4'>
                       <div className='col-span-12'>
                         <FormLabel>Username</FormLabel>
-                        <InputType placeholder='Type here' type='text' name='username' />
+                        <Field as={InputType} placeholder='Type here' type='text' name='username' />
+                        {errors.username && touched.username && (
+                          <div className='text-red-500'>{errors.username}</div>
+                        )}
                       </div>
                       <div className='col-span-12'>
                         <FormLabel>Email address</FormLabel>
-                        <InputType placeholder='Type here' type='text' name='email' />
+                        <Field as={InputType} placeholder='Type here' type='text' name='email' />
+                        {errors.email && touched.email && (
+                          <div className='text-red-500'>{errors.email}</div>
+                        )}
                       </div>
                       <div className='col-span-12'>
                         <FormLabel>Password</FormLabel>
-                        <InputType placeholder='Type here' type='password' name='password' />
+                        <Field as={InputType} placeholder='Type here' type='password' name='password' />
+                        {errors.password && touched.password && (
+                          <div className='text-red-500'>{errors.password}</div>
+                        )}
                       </div>
                       <div className='col-span-12'>
                         <FormLabel>Confirm Password</FormLabel>
-                        <InputType placeholder='Type here' type='password' name='confirmPassword' />
+                        <Field as={InputType} placeholder='Type here' type='password' name='confirmPassword' />
+                        {errors.confirmPassword && touched.confirmPassword && (
+                          <div className='text-red-500'>{errors.confirmPassword}</div>
+                        )}
+                      </div>
+                      <div className='col-span-12'>
+                        <FormLabel>User Type</FormLabel>
+                        <Field as='select' name='user_type' className='w-full px-4 py-2 border rounded-md'>
+                          <option value='' label='Select user type' />
+                          {userTypes.map((type) => (
+                            <option key={type.id} value={type.type}>{type.type}</option>
+                          ))}
+                        </Field>
+                        {errors.user_type && touched.user_type && (
+                          <div className='text-red-500'>{errors.user_type}</div>
+                        )}
                       </div>
                       <div className='col-span-12'>
                         <div className='flex items-center justify-between gap-3 mb-6'>
@@ -118,6 +165,9 @@ function SignUp() {
                           >
                             I agree to the terms and conditions
                           </Checkbox>
+                          {errors.agreeToTerms && touched.agreeToTerms && (
+                            <div className='text-red-500'>{errors.agreeToTerms}</div>
+                          )}
                         </div>
                       </div>
                       <div className='col-span-12'>

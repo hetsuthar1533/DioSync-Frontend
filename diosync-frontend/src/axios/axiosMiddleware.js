@@ -95,16 +95,16 @@ export default setupAxios
 //   return data2
 // }
 export async function axiosGet(url, data = null) {
-  console.log(`hi i am calling this ${BASE_URL}${url}`);
+  // console.log(`hi i am calling this ${BASE_URL}${url}`);
 
   try {
     const response = await axios.get(`${BASE_URL}${url}`, {
       params: data,
     });
-    console.log("hi this is me data2 inside axios middleware", response);
+    // console.log("hi this is me data2 inside axios middleware", response);
     return response;
   } catch (error) {
-    console.error("Error in axiosGet:", error);
+    // console.error("Error in axiosGet:", error);
     throw error; // Rethrow the error if you want to handle it later
   }
 }
@@ -130,6 +130,6 @@ export const axiosPut = (url, data) => {
 }
 
 export const axiosDelete = (url, data = null) => {
-  console.log(url)
+  // console.log(url)
   return axios.delete(`${BASE_URL}${url}`, data)
 }
